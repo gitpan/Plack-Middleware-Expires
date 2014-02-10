@@ -9,7 +9,7 @@ use Plack::Util::Accessor qw( content_type expires );
 use HTTP::Status qw//;
 use HTTP::Date;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub calc_expires {
     my ( $expires, $modified, $access ) = @_;
@@ -91,9 +91,13 @@ sub call {
         return if ! defined $type;
         my $type_check;
         for ( @type_match ) {
-            if ( ref $_ && ref $_ eq 'Regexp' ) {
-                if ( $type =~ m!$_! ) {
+            if (my $ref = ref $_) {
+                if ($ref eq 'Regexp' && $type =~ m!$_!) {
                     $type_check = 1;
+                    last;
+                }
+                elsif ($ref eq 'CODE') {
+                    $type_check = $_->($env);
                     last;
                 }
             }
@@ -161,6 +165,11 @@ Note: Expires works only for successful response and If exists Expires HTTP head
   content_type => [ 'text/css', 'application/javascript', qr!^image/! ]
 
 Content-Type header to apply Expires
+
+also C<content_type> accept CodeRef
+
+  content_type => sub { my $env = shift; return 1 if $env->{..} }
+
 
 =item Expires
 
