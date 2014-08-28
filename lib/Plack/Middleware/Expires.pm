@@ -9,7 +9,7 @@ use Plack::Util::Accessor qw( content_type expires );
 use HTTP::Status qw//;
 use HTTP::Date;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub calc_expires {
     my ( $expires, $modified, $access ) = @_;
@@ -152,7 +152,16 @@ Plack::Middleware::Expires - mod_expires for plack
 
 Plack::Middleware::Expires is Apache's mod_expires for Plack.
 This middleware controls the setting of Expires HTTP header and the max-age directive of the Cache-Control HTTP header in server responses.
-Note: Expires works only for successful response and If exists Expires HTTP header already, this middleware does not override.
+
+B<Note>:
+
+=over
+
+=item * Expires works only for successful response,
+
+=item * If an Expires HTTP header exists already, it will not be overridden by this middleware.
+
+=back
 
 =head1 CONFIGURATIONS
 
